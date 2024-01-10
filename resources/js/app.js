@@ -5,6 +5,7 @@ class Terminal {
         this.commandHistory = [];
         this.historyIndex = -1;
         this.isTyping = false;
+        this.playerId = localStorage.getItem('player_id') || null;
 
         this.bindEvents();
     }
@@ -48,38 +49,44 @@ class Terminal {
 
     submitCommand(command) {
         this.printLine(`> ${command}`, 'system');
-
-        if (this.isTyping) {
-            setTimeout(() => this.processCommand(command), 100);
-        } else {
-            this.processCommand(command);
-        }
+        this.sendToApi(command);
     }
 
-    processCommand(command) {
-        const cmd = command.toLowerCase().replace(/^\//, '');
-        const parts = cmd.split(' ');
-        const action = parts[0];
-        const arg = parts.slice(1).join(' ');
+    async sendToApi(command) {
+        this.inputEl.disabled = true;
 
-        const responses = {
-            look: 'Building Entrance\nYou stand at the entrance of an abandoned building. The air smells of dust and old wiring. A flickering light buzzes overhead.\n\nExits: north, east, up\nYou see: Flashlight',
-            status: 'Location: Building Entrance\nHealth: 100/100\nExits: north, east, up',
-            inventory: 'Your inventory is empty.',
-            help: 'Available commands:\n  /go <direction>  - Move (north, south, east, west, up, down)\n  /take <item>     - Pick up an item\n  /use <item>      - Use an item from inventory\n  /status          - Check current status\n  /look            - Look around the room\n  /inventory       - Check your inventory\n  /help            - Show this help',
-        };
+        try {
+            const response = await fetch('/api/game/command', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                },
+                body: JSON.stringify({
+                    command: command,
+                    player_id: this.playerId ? parseInt(this.playerId) : null,
+                }),
+            });
 
-        if (responses[action]) {
-            this.printLine(responses[action]);
-        } else if (action === 'go') {
-            if (!arg) {
-                this.printLine('Go where? Specify a direction: north, south, east, west, up, down.', 'error');
-            } else {
-                this.printLine(`You move ${arg}.\n\nDark Corridor\nA long corridor stretches before you. Broken fluorescent tubes hang from the ceiling.`, 'system');
+            const data = await response.json();
+
+            if (data.player_id) {
+                this.playerId = data.player_id;
+                localStorage.setItem('player_id', this.playerId);
             }
-        } else {
-            this.printLine(`Unknown command: ${action}. Type 'help' for available commands.`, 'error');
+
+            if (data.success) {
+                this.printLine(data.message);
+            } else {
+                this.printLine(data.message, 'error');
+            }
+        } catch (error) {
+            this.printLine('Connection lost. The mainframe is unreachable.', 'error');
         }
+
+        this.inputEl.disabled = false;
+        this.inputEl.focus();
     }
 
     printLine(text, type = '') {
