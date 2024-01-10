@@ -1,0 +1,188 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-mono: 'Courier New', Courier, monospace;
+    --color-terminal: #00ff41;
+    --color-terminal-dim: #00aa2a;
+    --color-terminal-glow: #00ff4133;
+}
+
+.terminal-wrapper {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.terminal-screen {
+    position: relative;
+    background: #0a0a0a;
+    border: 2px solid #1a3a1a;
+    border-radius: 12px;
+    padding: 1.5rem;
+    min-height: 70vh;
+    max-height: 85vh;
+    overflow: hidden;
+    box-shadow:
+        0 0 20px #00ff4122,
+        0 0 60px #00ff4111,
+        inset 0 0 80px #00000088;
+}
+
+.terminal-screen::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center, transparent 60%, #00000066 100%);
+    pointer-events: none;
+    z-index: 10;
+}
+
+.scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        #00000022 2px,
+        #00000022 4px
+    );
+    pointer-events: none;
+    z-index: 11;
+    animation: scanline-shift 0.1s linear infinite;
+}
+
+@keyframes scanline-shift {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 4px; }
+}
+
+.crt-flicker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 12;
+    animation: flicker 0.15s infinite;
+    background: transparent;
+}
+
+@keyframes flicker {
+    0% { opacity: 0.97; }
+    5% { opacity: 0.95; }
+    10% { opacity: 0.98; }
+    15% { opacity: 0.96; }
+    20% { opacity: 0.99; }
+    50% { opacity: 0.97; }
+    80% { opacity: 0.98; }
+    90% { opacity: 0.96; }
+    100% { opacity: 0.99; }
+}
+
+.terminal-content {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.terminal-log {
+    flex: 1;
+    overflow-y: auto;
+    color: #00ff41;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    padding-bottom: 1rem;
+    scrollbar-width: thin;
+    scrollbar-color: #1a3a1a transparent;
+}
+
+.terminal-log::-webkit-scrollbar {
+    width: 6px;
+}
+
+.terminal-log::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.terminal-log::-webkit-scrollbar-thumb {
+    background: #1a3a1a;
+    border-radius: 3px;
+}
+
+.terminal-log .log-entry {
+    margin-bottom: 0.5rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    text-shadow: 0 0 8px #00ff4144;
+}
+
+.terminal-log .log-entry.error {
+    color: #ff4444;
+    text-shadow: 0 0 8px #ff444444;
+}
+
+.terminal-log .log-entry.system {
+    color: #00aa2a;
+}
+
+.terminal-log .log-entry .char {
+    display: inline;
+    opacity: 0;
+    animation: char-appear 0.03s forwards;
+}
+
+@keyframes char-appear {
+    to { opacity: 1; }
+}
+
+.terminal-input-line {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #1a3a1a;
+    flex-shrink: 0;
+}
+
+.prompt {
+    color: #00ff41;
+    font-size: 0.875rem;
+    text-shadow: 0 0 8px #00ff4144;
+    user-select: none;
+}
+
+.terminal-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #00ff41;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.875rem;
+    caret-color: #00ff41;
+    text-shadow: 0 0 8px #00ff4144;
+}
+
+.terminal-input::placeholder {
+    color: #00aa2a66;
+}
+
+@keyframes cursor-blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
