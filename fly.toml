@@ -1,0 +1,34 @@
+app = "terminal-quest"
+primary_region = "fra"
+
+[build]
+
+[env]
+  APP_ENV = "production"
+  APP_DEBUG = "false"
+  LOG_CHANNEL = "stderr"
+  LOG_LEVEL = "error"
+  DB_CONNECTION = "sqlite"
+  DB_DATABASE = "/var/www/html/storage/database.sqlite"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  memory = "256MB"
+  cpu_kind = "shared"
+  cpus = 1
+
+[mounts]
+  source = "app_storage"
+  destination = "/var/www/html/storage"
+  initial_size = "1GB"
+
+[deploy]
+  release_command = "php artisan migrate --force"
+  strategy = "rolling"
