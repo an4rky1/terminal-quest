@@ -1,58 +1,142 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Terminal Quest
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Text-based RPG styled as a retro hacker terminal. Green monochrome text on black background, CRT scanline effects, typewriter text animation, and pseudo-console command input.
 
-## About Laravel
+Built with Laravel as the game engine and vanilla JS for the frontend.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+![Terminal Quest](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white&style=flat-square)
+![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?logo=php&logoColor=white&style=flat-square)
+![SQLite](https://img.shields.io/badge/DB-SQLite-003B57?logo=sqlite&logoColor=white&style=flat-square)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Retro terminal UI** — CRT scanlines, screen flicker, vignette, green phosphor glow
+- **Typewriter animation** — text appears character by character
+- **Command parser** — natural text commands (`/go north`, `/take key`, `/use potion`)
+- **Game engine** — rooms, directional connections, locked doors, items, inventory
+- **Persistent state** — player position and inventory saved in SQLite
+- **API-driven** — frontend communicates with backend via JSON API
 
-## Learning Laravel
+## Commands
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| Command | Description |
+|---|---|
+| `/go <direction>` | Move (north, south, east, west, up, down) |
+| `/take <item>` | Pick up an item from the current room |
+| `/use <item>` | Use an item from inventory |
+| `/look` | Look around the current room |
+| `/status` | Check health, location, exits, and items |
+| `/inventory` | View your inventory |
+| `/help` | Show available commands |
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Quick Start
 
 ```bash
-composer require laravel/boost --dev
+# Install dependencies
+composer install
+npm install
 
-php artisan boost:install
+# Setup environment and database
+cp .env.example .env
+php artisan key:generate
+php artisan migrate:fresh --seed
+
+# Build frontend assets
+npm run build
+
+# Start the server
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Open **http://127.0.0.1:8000** in your browser.
 
-## Contributing
+## Development
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Run Vite dev server with hot module replacement:
 
-## Code of Conduct
+```bash
+npm run dev
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Run Laravel server in another terminal:
 
-## Security Vulnerabilities
+```bash
+php artisan serve
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Project Structure
+
+```
+app/
+├── Game/
+│   └── CommandParser.php        # Game command handler
+├── Http/Controllers/Api/
+│   └── GameController.php       # API endpoints
+└── Models/
+    ├── Item.php                 # Item definitions
+    ├── Player.php               # Player session
+    ├── PlayerInventory.php      # Player inventory
+    ├── Room.php                 # Game locations
+    ├── RoomConnection.php       # Directional transitions
+    └── RoomItem.php             # Items placed in rooms
+
+database/
+└── seeders/
+    └── GameSeeder.php           # Starter map (5 rooms)
+
+resources/
+├── css/app.css                  # Terminal styles + CRT effects
+├── js/app.js                    # Terminal UI + API integration
+└── views/terminal.blade.php     # Main game view
+
+routes/
+├── api.php                      # POST /api/game/command, GET /api/game/state
+└── web.php                      # Serves the terminal view
+```
+
+## Database Schema
+
+```
+rooms              — id, name, description, is_start
+room_connections   — id, from_room_id, to_room_id, direction, is_locked, required_item_id
+items              — id, name, description, type, is_usable
+room_items         — id, room_id, item_id  (items on the floor)
+players            — id, name, current_room_id, health
+player_inventory   — id, player_id, item_id, quantity
+```
+
+## Starter Map
+
+```
+        [Server Room] (locked — needs Rusty Key)
+              |
+        [Dark Corridor]
+              |
+[Storage] -- [Entrance] -- [Rooftop]
+ (key)        (start)
+              (flashlight)
+```
+
+## API
+
+### Send a command
+
+```
+POST /api/game/command
+Content-Type: application/json
+
+{
+  "command": "go north",
+  "player_id": 1  // optional, auto-created if omitted
+}
+```
+
+### Get player state
+
+```
+GET /api/game/state?player_id=1
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT
