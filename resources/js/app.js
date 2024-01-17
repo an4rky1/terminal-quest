@@ -121,15 +121,36 @@ class Terminal {
     }
 
     init() {
-        const welcome = `╔══════════════════════════════════════╗
-║       T E R M I N A L   Q U E S T    ║
-║         v1.0 // RETRO EDITION        ║
-╚══════════════════════════════════════╝
+        const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+        const boot = `[${now}] BOOT SEQUENCE INITIATED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-System initialized. Connection established.
-Type 'help' for available commands.
+  ████████╗███████╗██████╗ ███╗   ███╗
+  ╚══██╔══╝██╔════╝██╔══██╗████╗ ████║
+     ██║   █████╗  ██████╔╝██╔████╔██║
+     ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║
+     ██║   ███████╗██║  ██║██║ ╚═╝ ██║
+     ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝
+                     Q U E S T
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+KERNEL  :: v3.14.159
+MEMORY  :: 640K OK
+NETWORK :: CONNECTED [192.168.0.42]
+USER    :: ANONYMOUS
+STATUS  :: UNAUTHORIZED ACCESS DETECTED
+
+> Establishing secure connection...
+> Bypassing firewall... [DONE]
+> Loading game engine...     [DONE]
+> Initializing world state... [DONE]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Welcome, hacker. Type 'help' for available commands.
 `;
-        this.printLine(welcome, 'system');
+        this.printLine(boot, 'system');
     }
 }
 
