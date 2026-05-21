@@ -1,8 +1,6 @@
 services:
   - type: web
     name: terminal-quest
-    runtime: image
-    repo: https://github.com/your-username/terminal-quest
     plan: free
     dockerfilePath: ./Dockerfile
     envVars:
