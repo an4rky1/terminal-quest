@@ -19,6 +19,8 @@ services:
         fromDatabase:
           name: terminal-quest-db
           property: connectionString
+      - key: DB_PREFIX
+        value: quest_
     healthCheckPath: /
 
 databases:
