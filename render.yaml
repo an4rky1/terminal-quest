@@ -1,6 +1,7 @@
 services:
   - type: web
     name: terminal-quest
+    runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile
     envVars:
