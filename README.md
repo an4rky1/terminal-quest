@@ -4,8 +4,9 @@ Text-based RPG styled as a retro hacker terminal. Green monochrome text on black
 
 Built with Laravel as the game engine and vanilla JS for the frontend.
 
-![Terminal Quest](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white&style=flat-square)
+![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white&style=flat-square)
 ![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?logo=php&logoColor=white&style=flat-square)
+![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL-4169E1?logo=postgresql&logoColor=white&style=flat-square)
 ![SQLite](https://img.shields.io/badge/DB-SQLite-003B57?logo=sqlite&logoColor=white&style=flat-square)
 
 ## Features
@@ -14,7 +15,7 @@ Built with Laravel as the game engine and vanilla JS for the frontend.
 - **Typewriter animation** — text appears character by character
 - **Command parser** — natural text commands (`/go north`, `/take key`, `/use potion`)
 - **Game engine** — rooms, directional connections, locked doors, items, inventory
-- **Persistent state** — player position and inventory saved in SQLite
+- **Persistent state** — player position and inventory saved in PostgreSQL (production) or SQLite (local)
 - **API-driven** — frontend communicates with backend via JSON API
 
 ## Commands
@@ -135,6 +136,61 @@ Content-Type: application/json
 
 ```
 GET /api/game/state?player_id=1
+```
+
+## Deploy to Render (Free Tier)
+
+### One-click deploy via Render Blueprint
+
+Push to GitHub, then:
+
+1. Go to [dashboard.render.com/blueprints](https://dashboard.render.com/blueprints)
+2. Connect your GitHub repo
+3. Render reads `render.yaml` and creates:
+   - **Web Service** (Docker) — nginx + PHP-FPM
+   - **PostgreSQL** — free 1GB database
+
+4. Set `APP_KEY` in Render dashboard:
+   ```bash
+   php artisan key:generate --show
+   ```
+   Copy the key → Render Dashboard → Environment → `APP_KEY`
+
+5. Deploy — migrations run automatically on each deploy via `start.sh`
+
+6. Seed the database (first time only):
+   ```bash
+   # Open Render Shell and run:
+   php artisan db:seed --class=GameSeeder --force
+   ```
+
+### Manual setup (if not using Blueprint)
+
+1. Create a **Web Service (Docker)** on Render
+2. Connect your GitHub repo
+3. Set:
+   - **Name**: `terminal-quest`
+   - **Region**: Frankfurt (or closest)
+   - **Branch**: `main`
+   - **Plan**: Free
+4. Add environment variables:
+   - `APP_ENV` → `production`
+   - `APP_DEBUG` → `false`
+   - `APP_KEY` → (generated via `php artisan key:generate --show`)
+   - `DB_CONNECTION` → `pgsql`
+5. Create a **PostgreSQL** database on Render
+6. Copy the `Internal Database URL` and add it as `DB_URL` env var in the web service
+7. Deploy
+
+**Note**: If you want to preserve the database after deploying, make sure to seed **after** the first deploy completes.
+
+You can also run locally with SQLite (no PostgreSQL needed):
+
+```bash
+cp .env.example .env
+# Edit .env: set DB_CONNECTION=sqlite (default)
+php artisan migrate:fresh --seed
+php artisan serve
 ```
 
 ## License

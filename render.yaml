@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: terminal-quest
+    runtime: image
+    repo: https://github.com/your-username/terminal-quest
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        sync: false
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        fromDatabase:
+          name: terminal-quest-db
+          property: connectionString
+    healthCheckPath: /
+
+databases:
+  - name: terminal-quest-db
+    plan: free
+    databaseName: terminal_quest
