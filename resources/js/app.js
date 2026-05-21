@@ -121,8 +121,7 @@ class Terminal {
     }
 
     init() {
-        const boot = `
-  TERMINAL QUEST
+        const boot = `  TERMINAL QUEST
   ──────────────
 
   KERNEL  :: v3.14.159
@@ -134,10 +133,9 @@ class Terminal {
   > Loading game engine...            [DONE]
   > Initializing world state...       [DONE]
 
-  ────────────────────────────────────
+  ─────────────────────────────────────
 
-  Welcome, hacker. Type 'help' for available commands.
-`;
+  Welcome, hacker. Type 'help' for available commands.`;
         this.printLine(boot, 'system');
     }
 }
