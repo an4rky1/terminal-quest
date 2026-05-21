@@ -16,14 +16,7 @@ services:
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_URL
-        fromDatabase:
-          name: terminal-quest-db
-          property: connectionString
+        sync: false
       - key: DB_PREFIX
         value: quest_
     healthCheckPath: /
-
-databases:
-  - name: terminal-quest-db
-    plan: free
-    databaseName: terminal_quest
